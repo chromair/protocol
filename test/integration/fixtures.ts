@@ -54,6 +54,7 @@ import {
   TestIRToken,
   TestIStRSR,
   RecollateralizationLibP1,
+  YTokenFiatCollateral
 } from '../../typechain'
 
 import { Collateral, Implementation, IMPLEMENTATION } from '../fixtures'
