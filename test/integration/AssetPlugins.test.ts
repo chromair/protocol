@@ -60,7 +60,7 @@ const holdercWBTC = '0x7132ad0a72b5ba50bdaa005fad19caae029ae699'
 const holderWETH = '0xf04a5cc80b1e94c69b48f5ee68a08cd2f09a7c3e'
 const holdercETH = '0x10d88638be3c26f3a47d861b8b5641508501035d'
 const holderEURT = '0x5754284f345afc66a98fbb0a0afe71e0f007b949'
-const holderyDAI = '0x6bc04e10e6a0ba9e79fa53e5310257f64d689f87'
+const holderyDAI = '0xda8aba4df450469b2e9de4ad94e37f21c8ad0c7a'
 
 const NO_PRICE_DATA_FEED = '0x51597f405303C4377E36123cBc172b13269EA163'
 
@@ -506,19 +506,19 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
         expect(await ytkInf.yTokenCollateral.targetName()).to.equal(
           ethers.utils.formatBytes32String('USD')
         )
-        // expect(await ytkInf.yTokenCollateral.refPerTok()).to.be.closeTo(
-        //   ytkInf.refPerTok,
-        //   fp('1')
-        // )
-        // expect(await ytkInf.yTokenCollateral.targetPerRef()).to.equal(fp('1'))
-        // expect(await ytkInf.yTokenCollateral.pricePerTarget()).to.equal(fp('1'))
-        // expect(await ytkInf.yTokenCollateral.prevReferencePrice()).to.equal(
-        //   await ytkInf.yTokenCollateral.refPerTok()
-        // )
-        // expect(await ytkInf.yTokenCollateral.strictPrice()).to.be.closeTo(
-        //   ytkInf.refPerTok,
-        //   fp('1')
-        // )
+        expect(await ytkInf.yTokenCollateral.refPerTok()).to.be.closeTo(
+          ytkInf.refPerTok,
+          fp('1')
+        )
+        expect(await ytkInf.yTokenCollateral.targetPerRef()).to.equal(fp('1'))
+        expect(await ytkInf.yTokenCollateral.pricePerTarget()).to.equal(fp('1'))
+        expect(await ytkInf.yTokenCollateral.prevReferencePrice()).to.equal(
+          await ytkInf.yTokenCollateral.refPerTok()
+        )
+        expect(await ytkInf.yTokenCollateral.strictPrice()).to.be.closeTo(
+          ytkInf.refPerTok,
+          fp('1')
+        )
 
         expect(await ytkInf.yTokenCollateral.connect(owner).getClaimCalldata()).to.eql([
           fp(0), fp(0)
