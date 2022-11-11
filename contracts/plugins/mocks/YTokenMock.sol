@@ -2,9 +2,8 @@
 pragma solidity 0.8.9;
 
 import 'contracts/plugins/mocks/ERC20Mock.sol';
-import 'contracts/plugins/assets/IYToken.sol';
 
-contract YTokenMock is ERC20Mock, IYToken {
+contract YTokenMock is ERC20Mock {
     //uint256 _totalAssets;
 
     constructor(string memory name, string memory symbol) ERC20Mock(name, symbol) {}
