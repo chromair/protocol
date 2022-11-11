@@ -5,22 +5,22 @@ import 'contracts/plugins/mocks/ERC20Mock.sol';
 import 'contracts/plugins/assets/IYToken.sol';
 
 contract YTokenMock is ERC20Mock, IYToken {
-    uint256 _totalAssets;
+    //uint256 _totalAssets;
 
     constructor(string memory name, string memory symbol) ERC20Mock(name, symbol) {}
 
-    function shareValue(uint256 shares) public view returns (uint256 amount) {
-     //   shares = amount * totalSupply / self._totalAssets()
-        return (shares * _totalAssets) / this.totalSupply();
-    }
+    //function shareValue(uint256 shares) public view returns (uint256 amount) {
+    // //   shares = amount * totalSupply / self._totalAssets()
+    //    return (shares * _totalAssets) / this.totalSupply();
+    //}
 
-    function mint(address recipient, uint256 amount) external {
-        _mint(recipient, amount);
-        _totalAssets += amount;
-    }
+    //function mint(address recipient, uint256 amount) external {
+    //    _mint(recipient, amount);
+    //    _totalAssets += amount;
+    //}
 
-    function burn(address sender, uint256 amount) external {
-        _burn(sender, amount);
-        _totalAssets -= amount;
-    }
+    //function burn(address sender, uint256 amount) external {
+    //    _burn(sender, amount);
+    //    _totalAssets -= amount;
+    //}
 }
