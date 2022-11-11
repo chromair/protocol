@@ -7,6 +7,8 @@ import 'contracts/plugins/assets/IYToken.sol';
 contract YTokenMock is ERC20Mock, IYToken {
     uint256 _totalAssets;
 
+    constructor(string memory name, string memory symbol) ERC20Mock(name, symbol) {}
+
     function shareValue(uint256 shares) public view returns (uint256 amount) {
      //   shares = amount * totalSupply / self._totalAssets()
         return (shares * _totalAssets) / this.totalSupply();
