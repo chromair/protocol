@@ -270,7 +270,7 @@ async function collateralFixture(
     ]
   }
 
-  const makeYTokenCollateral = async (
+  const makeYTokenFiatCollateral = async (
     tokenAddress: string,
 
     chainlinkAddr: string,
@@ -282,7 +282,7 @@ async function collateralFixture(
     return [
       erc20,
       <YTokenFiatCollateral>(
-        await YTokenCollateralFactory.deploy(
+        await YTokenFiatCollateralFactory.deploy(
           fp('0.02'),
           chainlinkAddr,
           erc20.address,
@@ -530,8 +530,8 @@ async function collateralFixture(
     USDP_USD_PRICE_FEED,
     compToken
   )
-  const ydai = await makeYTokenCollateral(
-    networkConfig[chainId].tokens.yDAI as string,
+  const ydai = await makeYTokenFiatCollateral(
+    networkConfig[chainId].tokens.YDAI as string,
     DAI_USD_PRICE_FEED
   )
   const adai = await makeATokenCollateral(
