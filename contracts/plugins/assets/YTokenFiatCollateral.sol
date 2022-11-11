@@ -102,7 +102,7 @@ contract YTokenFiatCollateral is Collateral {
 
     /// @return {ref/tok} Quantity of whole reference units per whole collateral tokens
     function refPerTok() public view override returns (uint192) {
-        uint256 rate = IYToken(address(erc20)).shareValue(1e18);
+        uint256 rate = IYToken(address(erc20)).pricePerShare();
         return uint192(rate);
     }
 
