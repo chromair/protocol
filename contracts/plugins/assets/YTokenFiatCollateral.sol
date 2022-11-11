@@ -39,7 +39,7 @@ contract YTokenFiatCollateral is Collateral {
             fallbackPrice_,
             chainlinkFeed_,
             erc20_,
-            rewardERC20_,
+            address(0),
             maxTradeVolume_,
             oracleTimeout_,
             targetName_,
