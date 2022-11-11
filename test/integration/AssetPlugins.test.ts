@@ -41,6 +41,8 @@ import {
   TestIRToken,
   USDCMock,
   WETH9,
+  YTokenFiatCollateral,
+  YTokenMock
 } from '../../typechain'
 
 const createFixtureLoader = waffle.createFixtureLoader
@@ -143,7 +145,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
   let wethCollateral: SelfReferentialCollateral
   let cETHCollateral: CTokenSelfReferentialCollateral
   let eurtCollateral: EURFiatCollateral
-  let ydaiCollateral: YTokenSelfReferentialCollateral
+  let ydaiCollateral: YTokenFiatCollateral
 
   // Contracts to retrieve after deploy
   let rToken: TestIRToken
@@ -284,13 +286,13 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       wethCollateral = <SelfReferentialCollateral>collateral[17] // wETH
       cETHCollateral = <CTokenSelfReferentialCollateral>collateral[18] // cETH
       eurtCollateral = <EURFiatCollateral>collateral[19] // EURT
-      ydaiCollateral = <YTokenSelfReferentialCollateral>collateral[20] // YDAI
+      ydaiCollateral = <YTokenFiatCollateral>collateral[20] // YDAI
 
       // Get assets and tokens for default basket
       daiCollateral = <FiatCollateral>basket[0]
       aDaiCollateral = <ATokenFiatCollateral>basket[1]
       cDaiCollateral = <CTokenFiatCollateral>basket[2]
-      ydaiCollateral = <YTokenSelfReferentialCollateral>basket[3] // YDAI
+      ydaiCollateral = <YTokenFiatCollateral>basket[3] // YDAI
 
       dai = <ERC20Mock>await ethers.getContractAt('ERC20Mock', await daiCollateral.erc20())
       stataDai = <StaticATokenLM>(
@@ -474,7 +476,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       }
     })
 
-    it('Should setup collateral correctly - YTokens Fiat', async () => {
+    it.only('Should setup collateral correctly - YTokens Fiat', async () => {
       // Define interface required for each ytoken
       interface YTokenInfo {
         token: ERC20Mock
@@ -488,7 +490,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
         {
           token: dai,
           tokenAddress: networkConfig[chainId].tokens.DAI || '',
-          ydai: ydai,
+          yToken: ydai,
           yTokenAddress: networkConfig[chainId].tokens.yDAI || '',
           yTokenCollateral: ydaiCollateral,
           refPerTok: fp('0.022'),
