@@ -328,7 +328,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       })
       // yDAI
       await whileImpersonating(holderyDAI, async (ydaiSigner) => {
-        await ydai.connect(ydaiSigner).transfer(addr1.address, toBNDecimals(initialBal, 8).mul(100))
+        await ydai.connect(ydaiSigner).transfer(addr1.address, toBNDecimals(initialBal))
       })
 
       // Setup balances for USDT
