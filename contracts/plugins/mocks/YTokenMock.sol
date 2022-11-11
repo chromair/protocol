@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BlueOak-1.0.0
 pragma solidity 0.8.9;
 
-import 'contracts/mocks/ERC20Mock.sol';
+import 'contracts/plugins/mocks/ERC20Mock.sol';
 import 'contracts/plugins/assets/IYToken.sol';
 
 contract YTokenMock is ERC20Mock, IYToken {
