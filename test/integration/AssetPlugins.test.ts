@@ -328,6 +328,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       })
       // yDAI
       await whileImpersonating(holderyDAI, async (ydaiSigner) => {
+        console.log(await ydai.balanceOf(ydaiSigner.address))
         await ydai.connect(ydaiSigner).transfer(addr1.address, initialBal)
       })
 
