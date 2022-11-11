@@ -187,6 +187,10 @@ async function collateralFixture(
     libraries: { OracleLib: oracleLib.address },
   })
 
+  const YTokenFiatCollateralFactory = await ethers.getContractFactory('YTokenFiatCollateral', {
+    libraries: { OracleLib: oracleLib.address }
+  })
+
   const defaultThreshold = fp('0.05') // 5%
   const delayUntilDefault = bn('86400') // 24h
 
@@ -261,6 +265,32 @@ async function collateralFixture(
           delayUntilDefault,
           (await referenceERC20.decimals()).toString(),
           comptroller.address
+        )
+      ),
+    ]
+  }
+
+  const makeYTokenCollateral = async (
+    tokenAddress: string,
+
+    chainlinkAddr: string,
+
+  ) => {
+    const erc20: IERC20Metadata = <IERC20Metadata>(
+      await ethers.getContractAt('YTokenMock', tokenAddress)
+    )
+    return [
+      erc20,
+      <YTokenFiatCollateral>(
+        await YTokenCollateralFactory.deploy(
+          fp('0.02'),
+          chainlinkAddr,
+          erc20.address,
+          config.rTokenMaxTradeVolume,
+          ORACLE_TIMEOUT,
+          ethers.utils.formatBytes32String('USD'),
+          defaultThreshold,
+          delayUntilDefault,
         )
       ),
     ]
@@ -500,7 +530,10 @@ async function collateralFixture(
     USDP_USD_PRICE_FEED,
     compToken
   )
-
+  const ydai = await makeYTokenCollateral(
+    networkConfig[chainId].tokens.yDAI as string,
+    DAI_USD_PRICE_FEED
+  )
   const adai = await makeATokenCollateral(
     networkConfig[chainId].tokens.aDAI as string,
     DAI_USD_PRICE_FEED,
@@ -586,6 +619,7 @@ async function collateralFixture(
     weth[0],
     cETH[0],
     eurt[0],
+    ydai[0],
   ]
   const collateral = [
     dai[1],
@@ -608,11 +642,12 @@ async function collateralFixture(
     weth[1],
     cETH[1],
     eurt[1],
+    ydai[1],
   ]
 
   // Create the initial basket
-  const basket = [dai[1], adai[1], cdai[1]]
-  const basketsNeededAmts = [fp('0.25'), fp('0.25'), fp('0.5')]
+  const basket = [dai[1], adai[1], cdai[1], ydai[1]]
+  const basketsNeededAmts = [fp('0.25'), fp('0.25'), fp('0.5'), fp('0.25')]
 
   return {
     erc20s,
