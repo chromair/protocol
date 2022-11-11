@@ -276,7 +276,7 @@ async function collateralFixture(
 
     chainlinkAddr: string,
 
-  ) => {
+  ): Promise<[IERC20Metadata, YTokenFiatCollateral]> => {
     const erc20: IERC20Metadata = <IERC20Metadata>(
       await ethers.getContractAt('YTokenMock', tokenAddress)
     )
