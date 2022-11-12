@@ -10,7 +10,7 @@ import '@withtally/tally-publish-dao'
 
 import dotenv from 'dotenv'
 import { HardhatUserConfig } from 'hardhat/types'
-import forkBlockNumber from './test/integration/fork-block-numbers'
+import forkBlockNumber from './test/integration2/fork-block-numbers'
 
 dotenv.config()
 
