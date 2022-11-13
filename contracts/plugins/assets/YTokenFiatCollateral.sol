@@ -16,6 +16,8 @@ contract YTokenFiatCollateral is Collateral {
     using OracleLib for AggregatorV3Interface;
     using FixLib for uint192;
 
+    uint192 public immutable defaultThreshold; // {%} e.g. 0.05
+
     uint192 public prevReferencePrice; // previous rate, {collateral/reference}
 
     /// @param chainlinkFeed_ Feed units: {UoA/ref}
@@ -30,6 +32,7 @@ contract YTokenFiatCollateral is Collateral {
         uint192 maxTradeVolume_,
         uint48 oracleTimeout_,
         bytes32 targetName_,
+        uint192 defaultThreshold_,
         uint256 delayUntilDefault_
     )
         Collateral(
@@ -43,6 +46,9 @@ contract YTokenFiatCollateral is Collateral {
             delayUntilDefault_
         )
     {
+        require(defaultThreshold_ > 0, "defaultThreshold zero");
+        defaultThreshold = defaultThreshold_;
+
         prevReferencePrice = refPerTok();
     }
 
