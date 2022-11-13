@@ -520,11 +520,6 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
           fp('1')
         )
 
-        expect(await ytkInf.yTokenCollateral.connect(owner).getClaimCalldata()).to.eql([
-          fp(0), fp(0)
-        ])
-        expect(await ytkInf.yTokenCollateral.rewardERC20()).to.equal(ZERO_ADDRESS)
-
         expect(await ytkInf.yTokenCollateral.maxTradeVolume()).to.equal(config.rTokenMaxTradeVolume)
       }
     })
