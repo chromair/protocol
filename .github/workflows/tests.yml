@@ -7,19 +7,20 @@ on:
   pull_request:
 
 jobs:
-  unit-tests:
-    name: 'Unit Tests'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn compile
-      - run: yarn lint
-      - run: yarn test:unit
+  # unit-tests:
+  
+  #   name: 'Unit Tests'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16.x
+  #         cache: 'yarn'
+  #     - run: yarn install --immutable
+  #     - run: yarn compile
+  #     - run: yarn lint
+  #     - run: yarn test:unit
 
   integration-tests:
     name: 'Integration Tests'

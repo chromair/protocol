@@ -41,6 +41,8 @@ import {
   TestIRToken,
   USDCMock,
   WETH9,
+  YTokenFiatCollateral,
+  YTokenMock
 } from '../../typechain'
 
 const createFixtureLoader = waffle.createFixtureLoader
@@ -58,6 +60,7 @@ const holdercWBTC = '0x7132ad0a72b5ba50bdaa005fad19caae029ae699'
 const holderWETH = '0xf04a5cc80b1e94c69b48f5ee68a08cd2f09a7c3e'
 const holdercETH = '0x10d88638be3c26f3a47d861b8b5641508501035d'
 const holderEURT = '0x5754284f345afc66a98fbb0a0afe71e0f007b949'
+const holderyDAI = '0xcae617c08bb445af1089dd34431a23a483c4ce04'
 
 const NO_PRICE_DATA_FEED = '0x51597f405303C4377E36123cBc172b13269EA163'
 
@@ -117,6 +120,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
   let weth: ERC20Mock
   let cETH: CTokenMock
   let eurt: ERC20Mock
+  let ydai: ERC20Mock
 
   let daiCollateral: FiatCollateral
   let usdcCollateral: FiatCollateral
@@ -141,6 +145,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
   let wethCollateral: SelfReferentialCollateral
   let cETHCollateral: CTokenSelfReferentialCollateral
   let eurtCollateral: EURFiatCollateral
+  let ydaiCollateral: YTokenFiatCollateral
 
   // Contracts to retrieve after deploy
   let rToken: TestIRToken
@@ -225,6 +230,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       weth = <ERC20Mock>erc20s[17] // wETH
       cETH = <CTokenMock>erc20s[18] // cETH
       eurt = <ERC20Mock>erc20s[19] // eurt
+      ydai = <ERC20Mock>erc20s[20] // ydai
 
       // Get plain aTokens
       aDai = <IAToken>(
@@ -280,11 +286,13 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       wethCollateral = <SelfReferentialCollateral>collateral[17] // wETH
       cETHCollateral = <CTokenSelfReferentialCollateral>collateral[18] // cETH
       eurtCollateral = <EURFiatCollateral>collateral[19] // EURT
+      ydaiCollateral = <YTokenFiatCollateral>collateral[20] // YDAI
 
       // Get assets and tokens for default basket
       daiCollateral = <FiatCollateral>basket[0]
       aDaiCollateral = <ATokenFiatCollateral>basket[1]
       cDaiCollateral = <CTokenFiatCollateral>basket[2]
+      ydaiCollateral = <YTokenFiatCollateral>basket[3] // YDAI
 
       dai = <ERC20Mock>await ethers.getContractAt('ERC20Mock', await daiCollateral.erc20())
       stataDai = <StaticATokenLM>(
@@ -299,6 +307,7 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
           networkConfig[chainId].tokens.aDAI || ''
         )
       )
+      ydai = <ERC20Mock>await ethers.getContractAt('ERC20Mock', await ydaiCollateral.erc20())
 
       // Setup balances for addr1 - Transfer from Mainnet holders DAI, cDAI and aDAI (for default basket)
       // DAI
@@ -316,6 +325,11 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
       // cDAI
       await whileImpersonating(holderCDAI, async (cdaiSigner) => {
         await cDai.connect(cdaiSigner).transfer(addr1.address, toBNDecimals(initialBal, 8).mul(100))
+      })
+      // yDAI
+      await whileImpersonating(holderyDAI, async (ydaiSigner) => {
+        console.log(await ydai.balanceOf(ydaiSigner.address))
+        await ydai.connect(ydaiSigner).transfer(addr1.address, initialBal)
       })
 
       // Setup balances for USDT
@@ -459,6 +473,54 @@ describeFork(`Asset Plugins - Integration - Mainnet Forking P${IMPLEMENTATION}`,
           'RewardsClaimed'
         )
         expect(await tkInf.tokenCollateral.maxTradeVolume()).to.equal(config.rTokenMaxTradeVolume)
+      }
+    })
+
+    it.only('Should setup collateral correctly - YTokens Fiat', async () => {
+      // Define interface required for each ytoken
+      interface YTokenInfo {
+        token: ERC20Mock
+        tokenAddress: string
+        yToken: YTokenMock
+        yTokenAddress: string
+        yTokenCollateral: YTokenFiatCollateral
+        refPerTok: BigNumber
+      }
+      const yTokenInfos: YTokenInfo[] = [
+        {
+          token: dai,
+          tokenAddress: networkConfig[chainId].tokens.DAI || '',
+          yToken: ydai,
+          yTokenAddress: networkConfig[chainId].tokens.YDAI || '',
+          yTokenCollateral: ydaiCollateral,
+          refPerTok: fp('0.022'),
+        },
+      ]
+
+      for (const ytkInf of yTokenInfos) {
+        // YToken
+        expect(await ytkInf.yTokenCollateral.isCollateral()).to.equal(true)
+        expect(await ytkInf.yTokenCollateral.erc20()).to.equal(ytkInf.yToken.address)
+        expect(await ytkInf.yTokenCollateral.erc20()).to.equal(ytkInf.yTokenAddress)
+        expect(await ytkInf.yToken.decimals()).to.equal(18)
+        expect(await ytkInf.yTokenCollateral.targetName()).to.equal(
+          ethers.utils.formatBytes32String('USD')
+        )
+        expect(await ytkInf.yTokenCollateral.refPerTok()).to.be.closeTo(
+          ytkInf.refPerTok,
+          fp('1')
+        )
+        expect(await ytkInf.yTokenCollateral.targetPerRef()).to.equal(fp('1'))
+        expect(await ytkInf.yTokenCollateral.pricePerTarget()).to.equal(fp('1'))
+        expect(await ytkInf.yTokenCollateral.prevReferencePrice()).to.equal(
+          await ytkInf.yTokenCollateral.refPerTok()
+        )
+        expect(await ytkInf.yTokenCollateral.strictPrice()).to.be.closeTo(
+          ytkInf.refPerTok,
+          fp('1')
+        )
+
+        expect(await ytkInf.yTokenCollateral.maxTradeVolume()).to.equal(config.rTokenMaxTradeVolume)
       }
     })
 
